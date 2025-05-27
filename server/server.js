@@ -51,7 +51,7 @@ const seedDatabase = async () => {
             loginHour: row['Login Hour'],
             name: row['Name'],
             age: parseInt(row['Age']),
-            gender: row['Gender'],
+            gender: row['gender'],
             email: row['Email'],
             noTelp: row['No Telp'],
             brandDevice: row['Brand Device'],
