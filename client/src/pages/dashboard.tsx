@@ -6,7 +6,7 @@ import { customerApi } from "@/lib/api"
 import type { Customer } from "@/lib/interface"
 import CustomerTable from "@/components/customer-table"
 import GenderChart from "@/components/gender-chart"
-import AgeDistributionChart from "@/components/age-distribution-chart"
+import LocationDistributionChart from "@/components/location-distribution-chart"
 import DeviceBrandChart from "@/components/device-brand-chart"
 import LocationTypeChart from "@/components/location-type-chart"
 import DigitalInterestChart from "@/components/digital-interest-chart"
@@ -19,18 +19,20 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        setLoading(true)
-        const data = await customerApi.getCustomers()
-        setCustomers(data)
+        setLoading(true);
+        const data = await customerApi.getCustomers();
+        console.log("Fetched customers:", data); // <-- Tambahkan ini
+        setCustomers(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch customers")
+        setError(err instanceof Error ? err.message : "Failed to fetch customers");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchCustomers()
-  }, [])
+    fetchCustomers();
+  }, []);
+
 
   if (loading) {
     return (
@@ -128,15 +130,24 @@ export default function Dashboard() {
 
         {/* Main Content */}
         <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="overview">Data Overview</TabsTrigger>
-            <TabsTrigger value="table">Customer Table</TabsTrigger>
-          </TabsList>
+        <TabsList className="grid w-full grid-cols-2 gap-2 bg-gray-100 rounded-md p-1">
+          <TabsTrigger
+            value="overview"
+            className="text-black px-4 py-2 font-medium hover:bg-gray-200 data-[state=active]:bg-white data-[state=active]:text-zinc-900">
+            Data Overview
+          </TabsTrigger>
+          <TabsTrigger
+            value="table"
+            className="text-black px-4 py-2 font-medium hover:bg-gray-200 data-[state=active]:bg-white data-[state=active]:text-zinc-900">
+            Customer Table
+          </TabsTrigger>
+        </TabsList>
+
 
           <TabsContent value="overview" className="space-y-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <GenderChart customers={customers} />
-              <AgeDistributionChart customers={customers} />
+              <LocationDistributionChart customers={customers} />
               <DeviceBrandChart customers={customers} />
               <LocationTypeChart customers={customers} />
               <DigitalInterestChart customers={customers} />

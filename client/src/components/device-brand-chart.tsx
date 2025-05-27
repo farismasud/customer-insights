@@ -25,7 +25,7 @@ export default function DeviceBrandChart({ customers }: DeviceBrandChartProps) {
       percentage: customers.length > 0 ? ((count / customers.length) * 100).toFixed(1) : "0",
     }))
     .sort((a, b) => b.count - a.count)
-    .slice(0, 8) // Top 8 brands for better visibility
+    .slice(0, 10) // Top 10 brands for better visibility
 
   // Debug log to check data
   console.log("Device Brand Data:", chartData)
@@ -45,7 +45,7 @@ export default function DeviceBrandChart({ customers }: DeviceBrandChartProps) {
               <XAxis dataKey="brand" angle={-45} textAnchor="end" height={80} tick={{ fontSize: 11 }} />
               <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
               <Tooltip
-                formatter={(value: any) => [value, "Customers"]}
+                formatter={(value: number) => [value, "Customers"]}
                 labelFormatter={(label) => `Brand: ${label}`}
                 contentStyle={{
                   backgroundColor: "white",
@@ -58,7 +58,7 @@ export default function DeviceBrandChart({ customers }: DeviceBrandChartProps) {
           </ResponsiveContainer>
         </div>
         {/* Show summary below chart */}
-        <div className="mt-4 space-y-1">
+        {/* <div className="mt-4 space-y-1">
           <div className="text-sm font-medium">Top Brands:</div>
           <div className="grid grid-cols-2 gap-2 text-sm">
             {chartData.slice(0, 6).map((item) => (
@@ -70,7 +70,7 @@ export default function DeviceBrandChart({ customers }: DeviceBrandChartProps) {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </CardContent>
     </Card>
   )

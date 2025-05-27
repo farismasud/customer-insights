@@ -93,32 +93,27 @@ export default function CustomerTable({ customers }: CustomerTableProps) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[80px]">
-                  <Button variant="ghost" onClick={() => handleSort("number")} className="h-8 p-0">
-                    No. <ArrowUpDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </TableHead>
-                <TableHead>
+                <TableHead className="text-black">
                   <Button variant="ghost" onClick={() => handleSort("name")} className="h-8 p-0">
                     Name <ArrowUpDown className="ml-2 h-4 w-4" />
                   </Button>
                 </TableHead>
-                <TableHead>
+                <TableHead className="text-black">
                   <Button variant="ghost" onClick={() => handleSort("age")} className="h-8 p-0">
                     Age <ArrowUpDown className="ml-2 h-4 w-4" />
                   </Button>
                 </TableHead>
-                <TableHead>Gender</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>
+                <TableHead className="text-black">Gender</TableHead>
+                <TableHead className="text-black">Email</TableHead>
+                <TableHead className="text-black">Phone</TableHead>
+                <TableHead className="text-black">
                   <Button variant="ghost" onClick={() => handleSort("nameOfLocation")} className="h-8 p-0">
                     Location <ArrowUpDown className="ml-2 h-4 w-4" />
                   </Button>
                 </TableHead>
-                <TableHead>Device</TableHead>
-                <TableHead>Interest</TableHead>
-                <TableHead>
+                <TableHead className="text-black">Device</TableHead>
+                <TableHead className="text-black">Interest</TableHead>
+                <TableHead className="text-black">
                   <Button variant="ghost" onClick={() => handleSort("date")} className="h-8 p-0">
                     Date <ArrowUpDown className="ml-2 h-4 w-4" />
                   </Button>
@@ -127,8 +122,7 @@ export default function CustomerTable({ customers }: CustomerTableProps) {
             </TableHeader>
             <TableBody>
               {paginatedCustomers.map((customer) => (
-                <TableRow key={customer._id || customer.number}>
-                  <TableCell className="font-medium">{customer.number}</TableCell>
+                <TableRow key={customer._id}>
                   <TableCell className="font-medium">{customer.name}</TableCell>
                   <TableCell>{customer.age}</TableCell>
                   <TableCell>
@@ -138,7 +132,7 @@ export default function CustomerTable({ customers }: CustomerTableProps) {
                   <TableCell>{customer.noTelp}</TableCell>
                   <TableCell>{customer.nameOfLocation}</TableCell>
                   <TableCell>
-                    <Badge variant="outline">{customer.brandDevice}</Badge>
+                    <Badge variant="outline" className="text-black">{customer.brandDevice}</Badge>
                   </TableCell>
                   <TableCell className="text-sm">{customer.digitalInterest}</TableCell>
                   <TableCell className="text-sm">{customer.date}</TableCell>
@@ -156,8 +150,9 @@ export default function CustomerTable({ customers }: CustomerTableProps) {
           </div>
           <div className="flex space-x-2">
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
+              className="text-black ring-2 ring-inset"
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
             >
@@ -166,6 +161,7 @@ export default function CustomerTable({ customers }: CustomerTableProps) {
             <Button
               variant="outline"
               size="sm"
+              className="text-white"
               onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
             >

@@ -24,6 +24,7 @@ export default function DigitalInterestChart({ customers }: DigitalInterestChart
       percentage: ((count / customers.length) * 100).toFixed(1),
     }))
     .sort((a, b) => b.count - a.count)
+    .slice(0, 10)
 
   return (
     <Card className="lg:col-span-2">
@@ -39,7 +40,7 @@ export default function DigitalInterestChart({ customers }: DigitalInterestChart
               <XAxis dataKey="interest" angle={-45} textAnchor="end" height={80} fontSize={12} />
               <YAxis />
               <Tooltip
-                formatter={(value, name) => [value, "Customers"]}
+                formatter={(value) => [value, "Customers"]}
                 labelFormatter={(label) => {
                   const item = chartData.find((d) => d.interest === label)
                   return `Interest: ${item?.fullInterest || label}`
