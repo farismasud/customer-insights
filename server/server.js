@@ -4,12 +4,14 @@ const fs = require('fs');
 const csv = require('csv-parser');
 const Customer = require('./models/Customer');
 const customerRoutes = require('./routes/customerRoutes');
+const cors = require('cors');
 
 const app = express();
 const PORT = 5000;
 
 // Middleware
 app.use(express.json());
+app.use(cors());
 
 // MongoDB Connection
 mongoose.connect('mongodb://localhost:27017/customerDB', {
@@ -22,18 +24,21 @@ mongoose.connect('mongodb://localhost:27017/customerDB', {
 // Parse CSV and Seed Database
 const seedDatabase = async () => {
   try {
-    // Check if data already exists to avoid duplicates
     const count = await Customer.countDocuments();
     if (count > 0) {
       console.log('Database already seeded');
       return;
     }
 
-    const customers = [];
-    fs.createReadStream('./dataset/Dataset.csv')
+    const BATCH_SIZE = 1000;
+    let batch = [];
+
+    const stream = fs.createReadStream('./dataset/Dataset.csv');
+
+    stream
       .pipe(csv())
-      .on('data', (row) => {
-        customers.push({
+      .on('data', async (row) => {
+        batch.push({
           number: parseInt(row['Number']),
           nameOfLocation: row['Name of Location'],
           date: row['Date'],
@@ -47,11 +52,24 @@ const seedDatabase = async () => {
           digitalInterest: row['Digital Interest'],
           locationType: row['Location Type'],
         });
+
+        if (batch.length >= BATCH_SIZE) {
+          stream.pause();
+          await Customer.insertMany(batch);
+          batch = [];
+          stream.resume();
+        }
       })
       .on('end', async () => {
-        await Customer.insertMany(customers);
+        if (batch.length > 0) {
+          await Customer.insertMany(batch);
+        }
         console.log('CSV data successfully seeded into MongoDB');
+      })
+      .on('error', (err) => {
+        console.error('Error reading CSV file:', err);
       });
+
   } catch (error) {
     console.error('Error seeding database:', error);
   }
