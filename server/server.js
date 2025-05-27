@@ -82,7 +82,9 @@ seedDatabase();
 // Routes
 app.use('/api/customers', customerRoutes);
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// // Start Server
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
+// This is used by Vercel to run the server
+module.exports = app
