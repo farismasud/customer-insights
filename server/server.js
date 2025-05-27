@@ -23,68 +23,85 @@ mongoose.connect(process.env.MONGO_URI, {
   .catch((err) => console.error('MongoDB connection error:', err));
 
 // Parse CSV and Seed Database
+const BATCH_SIZE = 10000;
+
 const seedDatabase = async () => {
-  try {
-    const count = await Customer.countDocuments();
-    if (count > 0) {
-      console.log('Database already seeded');
-      return;
-    }
+  const count = await Customer.countDocuments();
+  if (count > 0) {
+    console.log('Database already seeded');
+    return;
+  }
 
-    const BATCH_SIZE = 1000;
-    let batch = [];
+  let batch = [];
+  let total = 0;
+  let rowCount = 0;
 
-    const stream = fs.createReadStream('./dataset/Dataset.csv');
+  const stream = fs.createReadStream('./dataset/Dataset.csv').pipe(csv());
 
+  return new Promise((resolve, reject) => {
     stream
-      .pipe(csv())
       .on('data', async (row) => {
-        batch.push({
-          number: parseInt(row['Number']),
-          nameOfLocation: row['Name of Location'],
-          date: row['Date'],
-          loginHour: row['Login Hour'],
-          name: row['Name'],
-          age: parseInt(row['Age']),
-          gender: row['Gender'],
-          email: row['Email'],
-          noTelp: row['No Telp'],
-          brandDevice: row['Brand Device'],
-          digitalInterest: row['Digital Interest'],
-          locationType: row['Location Type'],
-        });
+        rowCount++;
 
-        if (batch.length >= BATCH_SIZE) {
-          stream.pause();
-          await Customer.insertMany(batch);
-          batch = [];
-          stream.resume();
+        try {
+          const doc = {
+            number: parseInt(row['Number']),
+            nameOfLocation: row['Name of Location'],
+            date: row['Date'],
+            loginHour: row['Login Hour'],
+            name: row['Name'],
+            age: parseInt(row['Age']),
+            gender: row['Gender'],
+            email: row['Email'],
+            noTelp: row['No Telp'],
+            brandDevice: row['Brand Device'],
+            digitalInterest: row['Digital Interest'],
+            locationType: row['Location Type'],
+          };
+
+          batch.push(doc);
+
+          if (batch.length >= BATCH_SIZE) {
+            stream.pause();
+            await Customer.insertMany(batch, { ordered: false });
+            total += batch.length;
+            console.log(`Inserted ${total} records so far...`);
+            batch = [];
+            stream.resume();
+          }
+        } catch (err) {
+          console.error(`Error on row ${rowCount}:`, err.message);
         }
       })
       .on('end', async () => {
-        if (batch.length > 0) {
-          await Customer.insertMany(batch);
+        try {
+          if (batch.length > 0) {
+            await Customer.insertMany(batch, { ordered: false });
+            total += batch.length;
+          }
+          console.log(`Seeding complete. Total rows processed: ${rowCount}`);
+          console.log(`Total inserted: ${total}`);
+          resolve();
+        } catch (err) {
+          console.error('Final insert error:', err.message);
+          reject(err);
         }
-        console.log('CSV data successfully seeded into MongoDB');
       })
       .on('error', (err) => {
-        console.error('Error reading CSV file:', err);
+        console.error('Stream error:', err.message);
+        reject(err);
       });
-
-  } catch (error) {
-    console.error('Error seeding database:', error);
-  }
+  });
 };
 
-// Seed the database on server start
 seedDatabase();
 
 // Routes
 app.use('/api/customers', customerRoutes);
 
 // // Start Server
-// app.listen(PORT, () => {
-//   console.log(`Server running on port ${PORT}`);
-// });
-// This is used by Vercel to run the server
-module.exports = app
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+// module.exports = app
