@@ -1,11 +1,9 @@
 import type { Customer } from "./interface";
 
-const API_BASE_URL = "http://localhost:5000/api";
-
 export const customerApi = {
   async getCustomers(): Promise<Customer[]> {
     try {
-      const response = await fetch(`${API_BASE_URL}/customers`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/customers`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
