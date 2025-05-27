@@ -1,24 +1,15 @@
 import type { Customer } from "./interface";
 
 export const customerApi = {
-  async getCustomers(): Promise<Customer[]> {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/customers`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}, message: ${await response.text()}`);
-      }
-
-      const data = await response.json();
-      return Array.isArray(data) ? data : [];
-    } catch (error) {
-      console.error("Error fetching customers:", error);
-      throw error; // Throw the error so Dashboard can catch it
-    }
-  },
+  async getCustomersBatch(page = 1, limit = 150000): Promise<{
+    data: Customer[];
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  }> {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/customers?page=${page}&limit=${limit}`);
+    if (!response.ok) throw new Error("Failed to fetch batch");
+    return response.json();
+  }
 };

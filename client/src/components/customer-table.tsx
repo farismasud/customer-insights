@@ -13,12 +13,12 @@ interface CustomerTableProps {
   customers: Customer[]
 }
 
-type SortField = keyof Customer
+type SortField = keyof Customer | "_id"
 type SortDirection = "asc" | "desc"
 
 export default function CustomerTable({ customers }: CustomerTableProps) {
   const [searchTerm, setSearchTerm] = useState("")
-  const [sortField, setSortField] = useState<SortField>("name")
+  const [sortField, setSortField] = useState<SortField>("_id")
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
